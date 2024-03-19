@@ -1,5 +1,7 @@
 import './Prompt.css'
 import { getTime } from '../../utils/GetTime.js';
+
+
 const Prompt = ({children}) => {
  return (
     <div className="prompt">

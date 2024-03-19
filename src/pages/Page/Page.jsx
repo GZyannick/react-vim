@@ -2,7 +2,7 @@ import "./Page.css";
 import { useState, useEffect } from "react";
 import Prompts from "../Prompts/Prompts";
 import Vim from "../Vim/Vim.jsx"
-import { openDirectoryInstance } from '../../utils/fsa';
+import { openDirectoryInstance, initFolderData } from '../../utils/fsa';
 
 const Page = () => {
   const [rootDirectory, setRootDirectory] = useState();
@@ -14,6 +14,8 @@ const Page = () => {
     if (!isFileSystemOpen) return;
     const fetchDir = async () => {
       const dirHandle = await openDirectoryInstance();
+      const folderData = await initFolderData(dirHandle);
+      debugger;
       if (dirHandle) {
         setRootDirectory(dirHandle);
         setCurrentDirectory(dirHandle)
