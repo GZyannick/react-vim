@@ -122,19 +122,24 @@ export const openDirectoryInstance = async (mode = "read") => {
 }
 
 
-export const initFolderData = async (directory, i = 0) => {
+
+
+// create an object of all directories and files from le local storage
+export const initFolderData = async (directory, id="root") => {
   let uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
   const folderStructur = {
     id: uniqueId,
     name: directory.name,
     handler: directory,
     isFolder: directory.kind === "directory" ? true : false ,
+    parentId: id,
     items: [],
   }
+  
   if(!folderStructur.isFolder) return folderStructur;
 
   for await (const item of directory.values()){
-    folderStructur.items.push( await initFolderData(item, ++i)) 
+    folderStructur.items.push( await initFolderData(item, uniqueId)) 
   }
   return folderStructur
 }

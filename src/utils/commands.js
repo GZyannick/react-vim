@@ -3,27 +3,21 @@ import Prompt from "../components/Prompt/Prompt";
 import TerminalUserDisplay from "../components/terminalUserDisplay/TerminalUserDisplay";
 
 
-// TODO ne pas compter les espace en tant que params si il y a pas dautres char 
-
-// ---------------- Work -------------- //
-//  Clear
-//  help
-//  mkdir
-//  touch
-//  init
-//  cd
-
-// ----------------- TODO --------------- //
-// vim 
-// add tmux control to create remove new panel
 
 
-// clear the terminal
-const clear = (setState) => {
-  setState([]);
-}
 
-// show all available commands
+
+
+//////////////////////////////// WORKING COMMANDS ////////////////////////////////////////
+
+// used to clear all the terminal
+const clear = (setPromptList) => setPromptList([]);
+
+// give access to the user local file
+const init = (setIsFileSystemOpen) => setIsFileSystemOpen(true);
+
+// Show all available commands the user can use
+
 const help = (setState) => {
   const getCommands = () => {
     let content = [];
@@ -43,44 +37,61 @@ const help = (setState) => {
   ])
 }
 
-// give access to the user local file
-const init = (setState) => {
-  setState(true);
-}
+// show the content of the current Directory
+const ls = (setState, directory) => {
 
-const vim = (setIsVimOpen, path) => {
-  setIsVimOpen(true);
-}
-
-
-const ls = async (setState, dirHandle) => {
-  const directoryTree = [];
-
-  for await (const entry of dirHandle.current.values()) {
-    if (entry.name !== ".DS_Store") {
-      directoryTree.push(
-        <p key={entry.name}>{entry.name}</p>
-      );
-    };
-  };
-
-  await setState(prevState => [
+  setState(prevState => [
     ...prevState,
     <div key={prevState.length} className="command__result inline__command">
-      {directoryTree}
+      {directory.current.items.map((item) => {
+        if (item.name === ".DS_Store") return;
+        return <p key={item.id}>{item.name}</p>;
+      })}
     </div>
   ])
-
 }
 
-const cd = async (setState, dirHandle, cmds) => {
+
+
+
+//////////////////////////////// TODO COMMANDS ////////////////////////////////////////
+
+const vim = (setIsVimOpen, path) => {
+  setIsVimOpen(true)
+}
+
+
+// const cd = async (setState, dirHandle, cmds) => {
+//   const pathParameter = cmds.pop();
+//   if (!pathParameter) return; // todo return cmderr
+
+//   const directories = pathParameter.split("/")
+//   await pathHandler(setState, dirHandle, directories)
+//   dirHandle.setCurrent(prevCurrent => prevCurrent = dirHandle.current);
+// }
+
+
+
+const cd = (setState, directory, cmds) => {
   const pathParameter = cmds.pop();
-  if (!pathParameter) return; // todo return cmderr
 
-  const directories = pathParameter.split("/")
-  await pathHandler(setState, dirHandle, directories)
-  dirHandle.setCurrent(prevCurrent => prevCurrent = dirHandle.current);
+  if (!pathParameter) return; // TODO RETURN ERR
+
+  const splitParameter = pathParameter.split("/");
+  pathHandler(setState, directory, splitParameter);
+  directory.setCurrent(prevCurrent => prevCurrent = directory.current)
+
 }
+
+
+
+
+
+
+
+
+
+
 
 const mkdir = async (setState, dirHandle, cmds) => {
   const pathParameter = cmds.pop();
@@ -171,7 +182,7 @@ export const commands = {
     'desc': "a vim like editor",
     'dir': true,
     'params': true,
-  } 
+  }
 };
 
 
@@ -220,6 +231,20 @@ const createNewHandle = async (path, handle, type) => {
   return newHandle;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////// WORKING PRIVATE COMMANDS ////////////////////
+//
 /*
  *  getParentDir
  *
@@ -231,47 +256,40 @@ const createNewHandle = async (path, handle, type) => {
  *
  */
 
-const getParentOfDir = async (dir, searchValue) => {
+const getParentOfDirectory = (CurrentDir, searchValue) => {
   let res;
-  for await (const entry of dir.values()) {
+
+  for (const item of CurrentDir.items) {
     if (res) return res;
-    if (entry.kind !== "directory") continue;
-    if (entry.name === searchValue) {
-      res = dir
-    } else {
-      res = await getParentOfDir(entry, searchValue)
+    if (!item.isFolder) continue;
+    if (item.id === searchValue) {
+
+      res = CurrentDir
     }
-  };
+    else {
+      res = getParentOfDirectory(item, searchValue)
+    }
+  }
+
   return res;
 }
 
+const pathHandler = (setState, directory, paths) => {
 
-// idea 
-// Handle file too
-// return object with kind, name, and data to know if its a file or an dir
-// remove cmdErr in pathHandle (not sure about it)
-const pathHandler = async (setState, dirHandle, paths) => {
-  let chooseDirectory;
-
-  for await (const path of paths) {
+  for (const path of paths) {
     if (path === ".") continue;
     if (path === "~") {
-      dirHandle.current = dirHandle.root
+      directory.current = directory.root
     } else if (path === "..") {
-      if (dirHandle.root === dirHandle.current) {
-        return cmdErr(setState, `Cannot run .. ${path}`);
-      };
-
-      const getParentDir = await getParentOfDir(dirHandle.root, dirHandle.current.name);
-      if (!getParentOfDir) return cmdErr(setState, `Couldnt find ${path}`)
-      dirHandle.current = getParentDir;
+      if (directory.current.id === directory.root.id) return cmdErr(setState, `Cannot run this command ${path}`);
+      
+      const getParentDirectory = getParentOfDirectory(directory.root, directory.current.id);
+      if (!getParentDirectory) return cmdErr(setState, ` Couldnt find ${path}`);
+      directory.current = getParentDirectory;
     } else {
-      const subDir = await dirHandle.current.getDirectoryHandle(path).catch(console.error)
-      if (!subDir) return cmdErr(setState, `Couldnt find ${path}`);
-      dirHandle.current = subDir;
+      const subDirectory = directory.current.items.find( dir => dir.name === path);
+      if (!subDirectory) return cmdErr(setState, `Couldnt find ${path}`);
+      directory.current = subDirectory;
     }
-  }  
-
-  return chooseDirectory; 
+  }
 }
-

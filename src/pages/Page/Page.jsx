@@ -14,11 +14,11 @@ const Page = () => {
     if (!isFileSystemOpen) return;
     const fetchDir = async () => {
       const dirHandle = await openDirectoryInstance();
-      const folderData = await initFolderData(dirHandle);
-      debugger;
+      
       if (dirHandle) {
-        setRootDirectory(dirHandle);
-        setCurrentDirectory(dirHandle)
+        const folderData = await initFolderData(dirHandle);
+        setRootDirectory(folderData);
+        setCurrentDirectory(folderData)
       }
     }
     fetchDir();
