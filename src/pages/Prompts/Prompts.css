@@ -1,0 +1,31 @@
+
+
+.terminal__user__arrow {
+  color: green;
+  font-weight: bold;
+  margin-right: 1rem;
+  margin-left: 0.5rem;
+}
+
+.terminal__prompts__inputs {
+  display: flex;
+  justify-items: center;
+}
+
+.command__result {
+  border-bottom: 1px solid rgba(215, 215, 255, 0.3);
+  padding: 0.5rem;
+  padding-bottom: 1.5rem;
+  color: #cdd6f4;
+}
+
+.inline__command {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  padding-bottom: 0.5rem;
+}
+
+.inline__command > p {
+  margin-right: 1rem;
+}

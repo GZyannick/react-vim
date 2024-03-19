@@ -1,0 +1,76 @@
+
+
+.prompt {
+  border-bottom: 1px solid rgba(215, 215, 255, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.wrapper {
+  border-bottom: 1px solid rgba(215, 215, 255, 0.3);
+  padding-bottom: 0.5rem;
+  color: #cdd6f4;
+}
+
+.old__prompt {
+  border-bottom: 1px solid rgba(215, 215, 255, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.user__prompts__info {
+  list-style-type: none;
+  display: flex;
+  padding-left: 0;
+  justify-items: center;
+}
+
+.user__prompts__info > li {
+  position: relative;
+  font-size: 1rem;
+  height: 1.2rem;
+  text-align: center;
+  padding-left: 1.5rem;
+  padding-right: 0.5rem;
+}
+
+.user__prompts__info > li {
+  position: relative;
+  font-size: 1rem;
+  height: 1.2rem;
+  text-align: center;
+  padding-left: 1.5rem;
+  padding-right: 0.5rem;
+}
+
+.user__prompts__info > li:after {
+  content: "";
+  width: 1rem;
+  height: 1.2rem;
+  right: -0.95rem;
+  position: absolute;
+  clip-path: polygon(0 0, 0 100%, 100% 53%);
+}
+
+.user__name {
+  border-bottom-left-radius: 1rem;
+  border-top-left-radius: 1rem;
+  color: #D7D7FF;
+}
+.user__name, .user__name:after {
+  background: #3A3A3A;
+  z-index: 3;
+}
+
+.user__path, .user__path:after {
+  background: #FFAF86;
+  z-index: 2;
+  color: #000;
+}
+
+.datetime, .datetime:after {
+  background: #87D7D7;
+  z-index: 1;
+  color: #000;
+}
+
+
+

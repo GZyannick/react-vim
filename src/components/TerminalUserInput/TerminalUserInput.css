@@ -1,0 +1,17 @@
+
+
+textarea {
+  border: none;
+  overflow: auto;
+  background-color: transparent;
+  resize: none;
+  outline: none;
+  color: #cdd6f4;
+  width: 100%;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+
+
+

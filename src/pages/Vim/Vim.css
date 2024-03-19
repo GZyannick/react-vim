@@ -1,0 +1,11 @@
+.vim {
+  padding: 0.5rem;
+  width: 100vw;
+  height: 100vh;
+}
+
+.vim__editor {
+  height: 92%;
+  width: 100%;
+}
+
