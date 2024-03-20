@@ -1,3 +1,4 @@
+import FolderStructur from "../../components/Explorer/FolderStructur";
 import "./Vim.css";
 import { useEffect, useState } from "react";
 
@@ -10,19 +11,6 @@ const Vim = ({
 }) => {
   const [isVimInit, setIsVimInit] = useState(false);
   const [isVisualMode, setIsVisualMode] = useState(true);
-  const [dirAndFiles, setDirAndFiles] = useState([])
-
-  useEffect(() => {
-    (async () => {
-      const currentDirAndFile = [];
-      if (!isVimInit) {
-        for await (const data of currentDirectory.values()) {
-          if (data.name !== ".DS_Store") currentDirAndFile.push(data);
-        }
-        setDirAndFiles([...currentDirAndFile])
-      }
-    })()
-  }, [])
 
   if (isVimInit) {
     return (
@@ -47,12 +35,10 @@ const Vim = ({
                 <li>save: :w </li>
                 <li>leave Vim: :q </li>
               </ul>
-            </div>
+           </div>
             <p>====================================================</p>
 
-            <p>./</p>
-            <p>..</p>
-
+            <FolderStructur folderStruct={rootDirectory}/>
           </div>
           <footer>
             {isVisualMode ? "VISUAL MODE" : "INSERT MODE"}

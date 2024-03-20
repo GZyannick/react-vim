@@ -43,7 +43,7 @@ export const openDirectory = async (mode = "read") => {
               });
             })
           );
-          
+
         } else if (entry.kind === "directory") {
           dirs.push(getFiles(entry, nestedPath));
         }
@@ -76,7 +76,7 @@ export const openDirectory = async (mode = "read") => {
 
 
 export const createNewDir = (entry, folder) => {
-  
+
 }
 
 
@@ -104,7 +104,7 @@ export const openDirectoryInstance = async (mode = "read") => {
       }
     })();
 
-  if(!supportsFileSystemAccess){
+  if (!supportsFileSystemAccess) {
     console.error("File system api is not supported by your browser")
     return
   };
@@ -113,33 +113,44 @@ export const openDirectoryInstance = async (mode = "read") => {
     dirHandle = await window.showDirectoryPicker({
       mode
     })
-  }catch(err) {
-          if (err.name !== "AbortError") {
-        console.error(err.name, err.message);
-      }
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      console.error(err.name, err.message);
+    }
   }
   return dirHandle
 }
 
 
 
+export const getUniqId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
 
-// create an object of all directories and files from le local storage
-export const initFolderData = async (directory, id="root") => {
-  let uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+export const transformHandlerToFolderStructurObject = (directory, uniqId, id) => {
   const folderStructur = {
-    id: uniqueId,
+    id: uniqId,
     name: directory.name,
     handler: directory,
-    isFolder: directory.kind === "directory" ? true : false ,
+    isFolder: directory.kind === "directory" ? true : false,
     parentId: id,
     items: [],
-  }
-  
-  if(!folderStructur.isFolder) return folderStructur;
+  };
 
-  for await (const item of directory.values()){
-    folderStructur.items.push( await initFolderData(item, uniqueId)) 
+  return folderStructur;
+}
+
+// create an object of all directories and files from le local storage
+export const initFolderData = async (directory, id = "root") => {
+  const uniqId = getUniqId();
+  const folderStructur = transformHandlerToFolderStructurObject(directory, uniqId, id)
+
+  if (!folderStructur.isFolder) return folderStructur;
+
+  for await (const item of directory.values()) {
+    folderStructur.items.push(await initFolderData(item, uniqId))
   }
   return folderStructur
 }
+
+
