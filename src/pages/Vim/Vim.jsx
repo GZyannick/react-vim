@@ -1,6 +1,7 @@
 import FolderStructur from "../../components/Explorer/FolderStructur";
 import "./Vim.css";
 import { useEffect, useState } from "react";
+import CodeEditor from "../../components/Editor/CodeEditor";
 
 const Vim = ({
   rootDirectory,
@@ -10,13 +11,10 @@ const Vim = ({
   setIsVimOpen
 }) => {
   const [isVimInit, setIsVimInit] = useState(false);
-  const [isVisualMode, setIsVisualMode] = useState(true);
 
   if (isVimInit) {
     return (
-      <>
-
-      </>
+        <CodeEditor setIsVimOpen={setIsVimOpen}/>
     )
   } else {
     return (
@@ -38,16 +36,18 @@ const Vim = ({
            </div>
             <p>====================================================</p>
 
-            <FolderStructur folderStruct={rootDirectory}/>
+            <FolderStructur folderStruct={rootDirectory} setIsVimInit={setIsVimInit}/>
           </div>
-          <footer>
-            {isVisualMode ? "VISUAL MODE" : "INSERT MODE"}
-          </footer>
         </div>
 
       </>
     )
   }
+
 }
 
 export default Vim;
+
+
+
+

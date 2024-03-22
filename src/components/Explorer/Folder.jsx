@@ -8,7 +8,7 @@ const Folder = ({ explorer, isParentOpen, isRoot=false }) => {
   if (explorer.isFolder) {
     return (
       <div className="explorer">
-        <span id={isRoot ? "selected" : ""} data-toggle={isParentOpen} data-isfolder={true} onClick={() => setIsVisible(!isVisible)}>
+        <span className="folder__span"  id={isRoot ? "selected" : ""} data-toggle={isParentOpen} data-isfolder={true} onClick={() => setIsVisible(!isVisible)}>
           📁 {explorer.name}
         </span>
         <div  className={ isVisible ? "block" : "none"}>
@@ -21,7 +21,7 @@ const Folder = ({ explorer, isParentOpen, isRoot=false }) => {
   } else {
     return (
       <div className="explorer">
-        <span data-toggle={isParentOpen} data-isfolder={false}> 📄 {explorer.name}</span>
+        <span className="folder__span" data-toggle={isParentOpen} data-isfolder={false}> 📄 {explorer.name}</span>
       </div>)
   }
 }
