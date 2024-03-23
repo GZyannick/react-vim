@@ -75,11 +75,33 @@ export const openDirectory = async (mode = "read") => {
 };
 
 
-export const createNewDir = (entry, folder) => {
 
+export const search = (currentDir, searchValue, getParent) => {
+  let res;
+
+  for (const item of currentDir.items) {
+    if (res) return res;
+    if (item.id === searchValue) {
+      res = getParent ? currentDir : item;
+    } else {
+      res = search(item, searchValue, getParent);
+    }
+  }
+  return res
 }
 
 
+
+export const getFileContent = async (directory, id) => {
+  const file = search(directory, id, false);
+  // const regex = /\.(jpg|jpeg|png|gif|svg|JPG|JPEG|PNG|GIF|SVG)$/;
+  // if(regex.match(file.name)) return;
+  if (!file) return;
+  const res = await file.handler.getFile();
+  const content = await res.text();
+
+  return [res, content]
+}
 
 
 
@@ -152,5 +174,6 @@ export const initFolderData = async (directory, id = "root") => {
   }
   return folderStructur
 }
+
 
 

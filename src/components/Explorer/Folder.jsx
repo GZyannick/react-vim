@@ -21,7 +21,7 @@ const Folder = ({ explorer, isParentOpen, isRoot=false }) => {
   } else {
     return (
       <div className="explorer">
-        <span className="folder__span" data-toggle={isParentOpen} data-isfolder={false}> 📄 {explorer.name}</span>
+        <span className="folder__span" data-toggle={isParentOpen} data-isfolder={false} data-id={explorer.id}> 📄 {explorer.name}</span>
       </div>)
   }
 }

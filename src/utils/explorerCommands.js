@@ -1,4 +1,5 @@
 // store isPrev in keybind to know if we go up or down in the explorer
+
 const movementKeybinds = {
   "j": false,
   "ArrowDown": false,
@@ -25,8 +26,7 @@ const returnNewSelected = (children, isPrev) => {
 }
 
 
-export const handleExplorerKeys = (e, spans, setIsVimInit) => {
-
+export const handleExplorerKeys = (e, spans, setIsVimInit, setFileId) => {
   if (e.key in movementKeybinds) {
     e.preventDefault();
     returnNewSelected(spans, movementKeybinds[e.key]);
@@ -40,7 +40,8 @@ export const handleExplorerKeys = (e, spans, setIsVimInit) => {
 
     if (isFolder === "true") {
       selectedElement.click();
-    } else if (isFolder === "false") {
+    } else if (isFolder === "false" ) {
+      setFileId(selectedElement.dataset.id);
       setIsVimInit(true);
     }
   }

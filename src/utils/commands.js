@@ -2,7 +2,7 @@
 import Prompt from "../components/Prompt/Prompt";
 import TerminalUserDisplay from "../components/terminalUserDisplay/TerminalUserDisplay";
 import { transformHandlerToFolderStructurObject, getUniqId } from "./fsa";
-
+import { search } from "./fsa";
 
 
 //////////////////////////////// WORKING COMMANDS ////////////////////////////////////////
@@ -168,23 +168,8 @@ const createNewHandle = async (path, currentDir, type) => {
  *
  */
 
-const getParentOfDirectory = (CurrentDir, searchValue) => {
-  let res;
 
-  for (const item of CurrentDir.items) {
-    if (res) return res;
-    if (!item.isFolder) continue;
-    if (item.id === searchValue) {
 
-      res = CurrentDir
-    }
-    else {
-      res = getParentOfDirectory(item, searchValue)
-    }
-  }
-
-  return res;
-}
 
 const pathHandler = (setState, directory, paths) => {
 
@@ -195,7 +180,7 @@ const pathHandler = (setState, directory, paths) => {
     } else if (path === "..") {
       if (directory.current.id === directory.root.id) return cmdErr(setState, `Cannot run this command ${path}`);
 
-      const getParentDirectory = getParentOfDirectory(directory.root, directory.current.id);
+      const getParentDirectory = search(directory.root, directory.current.id, true);
       if (!getParentDirectory) return cmdErr(setState, ` Couldnt find ${path}`);
       directory.current = getParentDirectory;
     } else {

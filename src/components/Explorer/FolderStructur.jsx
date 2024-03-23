@@ -3,13 +3,13 @@ import Folder from "./Folder"
 import { handleExplorerKeys } from "../../utils/explorerCommands";
 
 
-const FolderStructur = ({ folderStruct, setIsVimInit }) => {
+const FolderStructur = ({ folderStruct, setIsVimInit, setFileId }) => {
   const folderStructurRef = useRef()
   const handleKeyDown = (e) => {
     if (!folderStructurRef.current) return
     //TODO remove querySelectorAll causing bug with page reload
     let spans = folderStructurRef.current.querySelectorAll('[data-toggle="true"]')
-    handleExplorerKeys(e, spans, setIsVimInit);
+    handleExplorerKeys(e, spans, setIsVimInit, setFileId);
   }
 
   useEffect(() => {
