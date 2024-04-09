@@ -1,17 +1,17 @@
 // store isPrev in keybind to know if we go up or down in the explorer
 
 const movementKeybinds = {
-  "j": false,
-  "ArrowDown": false,
-  "k": true,
-  "ArrowUp": true,
-}
+  j: false,
+  ArrowDown: false,
+  k: true,
+  ArrowUp: true,
+};
 
 const openKeybinds = {
-  "Enter": "",
-  "h": "",
-  "l": ""
-}
+  Enter: "",
+  h: "",
+  l: "",
+};
 
 const returnNewSelected = (children, isPrev) => {
   for (let i = 0; i < children.length; i++) {
@@ -20,11 +20,10 @@ const returnNewSelected = (children, isPrev) => {
       if (!currentChild) return;
       currentChild.id = "selected";
       children[i].id = "";
-      break
+      break;
     }
   }
-}
-
+};
 
 export const handleExplorerKeys = (e, spans, setIsVimInit, setFileId) => {
   if (e.key in movementKeybinds) {
@@ -34,15 +33,13 @@ export const handleExplorerKeys = (e, spans, setIsVimInit, setFileId) => {
 
   if (e.key in openKeybinds) {
     e.preventDefault();
-
     const selectedElement = document.querySelector("#selected");
     const isFolder = selectedElement.dataset.isfolder;
-
     if (isFolder === "true") {
       selectedElement.click();
-    } else if (isFolder === "false" ) {
+    } else if (isFolder === "false") {
       setFileId(selectedElement.dataset.id);
       setIsVimInit(true);
     }
   }
-}
+};

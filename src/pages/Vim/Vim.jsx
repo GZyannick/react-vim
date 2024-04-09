@@ -16,9 +16,6 @@ const Vim = ({
   const [fileContent, setFileContent] = useState();
   const [currentFileOpen, setCurrentFileOpen] = useState();
 
-
-
-
   useEffect(() => {
     if (!fileId) return;
 

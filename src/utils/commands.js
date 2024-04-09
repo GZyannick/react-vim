@@ -14,7 +14,6 @@ const clear = (setPromptList) => setPromptList([]);
 const init = (setIsFileSystemOpen) => setIsFileSystemOpen(true);
 
 // Show all available commands the user can use
-
 const help = (setState) => {
   const getCommands = () => {
     let content = [];
@@ -36,7 +35,6 @@ const help = (setState) => {
 
 // show the content of the current Directory
 const ls = (setState, directory) => {
-
   setState(prevState => [
     ...prevState,
     <div key={prevState.length} className="command__result inline__command">
@@ -51,13 +49,10 @@ const ls = (setState, directory) => {
 
 const cd = (setState, directory, cmds) => {
   const pathParameter = cmds.pop();
-
   if (!pathParameter) return; // TODO RETURN ERR
-
   const splitParameter = pathParameter.split("/");
   pathHandler(setState, directory, splitParameter);
   directory.setCurrent(prevCurrent => prevCurrent = directory.current)
-
 }
 
 
