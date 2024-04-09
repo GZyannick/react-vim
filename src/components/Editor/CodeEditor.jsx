@@ -1,10 +1,24 @@
 import { Editor } from "@monaco-editor/react";
 import { initVimMode, VimMode } from "monaco-vim";
 import * as monaco from "monaco-editor"
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import './editor.css'
-const CodeEditor = ({ setIsVimOpen, fileContent, currentFileOpen, setFileId }) => {
 
+
+const monacoLanguageSupport = {
+  ".js": "javascript",
+  ".ts": "typescript",
+  ".json": "json",
+  ".css": "css",
+  ".html": "html",
+}
+
+
+const CodeEditor = ({ setIsVimOpen, fileContent, setFileContent, currentFileOpen, setFileId }) => {
+
+  const [language, setLanguage] = useState('javascript')
+
+  const [error, setError] = useState("");
   const editorRef = useRef();
   const options = {
     readOnly: false,
@@ -19,45 +33,56 @@ const CodeEditor = ({ setIsVimOpen, fileContent, currentFileOpen, setFileId }) =
 
   //TODO trouver comment le mettre dans editorCommands avec setIsVimInit
   VimMode.Vim.defineEx('quit', 'q', () => {
-    setFileId(prevFileId => prevFileId = undefined);
-    setIsVimOpen(false)
+    if(fileContent === editorRef.current.getValue()){
+      setFileId(prevFileId => prevFileId = undefined);
+      setError("");
+      setIsVimOpen(false);
+    }else {
+      setError("no write since last change use ! to override it !");    
+    }
   })
 
   VimMode.Vim.defineEx('write', 'w', async () => {
-    if (!currentFileOpen) return; // TODO voir si doit creer nouveaux file pas sure si je le creer apres ou avant decrir dedans
-
-
+    if (!currentFileOpen) return;
+    const content = editorRef.current.getValue();
+    if(content === undefined) return;
+    const writable = await currentFileOpen.createWritable()
+    setFileContent(prevContent => prevContent = content)
+    await writable.write(content);
+    await writable.close();
   })
 
-  useRef(() => {
-
-  }, [])
-
-
   const onMount = (editor) => {
+
     editorRef.current = editor;
     const statusMode = document.getElementById("statusBar");
     initVimMode(editorRef.current, statusMode);
+
+    // get extension
+    const regex =/\.[0-9a-z]+$/i;
+    const currentLanguage = currentFileOpen.name.match(regex)[0]
+    if(monacoLanguageSupport[currentLanguage]){
+      //editor.setLanguage(monacoLanguageSupport[currentLanguage]);
+      monaco.editor.setModelLanguage(editor.getModel(), monacoLanguageSupport[currentLanguage])
+    }
     editor.focus();
   }
-
-  // const handleEditorChange = (value, event) => {
-  //   console.log(value, event);
-  // }
 
   return (
     <>
       <Editor
         id="monaco__editor"
-        height="80vh"
+        height="100vh"
         theme="vs-dark"
         onMount={onMount}
-        defaultLanguage="javascript"
-        defaultValue={fileContent}
         options={options}
-      //onChange={handleEditorChange}
+        defaultValue={fileContent}
+        defaultLanguage={language}
       />
-      <div id="statusBar"></div>
+      <div className="editorStatus">
+        <div id="statusBar"></div>
+        <div id="errorHandler">{error}</div>
+      </div> 
     </>
   )
 }

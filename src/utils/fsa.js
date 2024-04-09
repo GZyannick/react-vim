@@ -97,10 +97,11 @@ export const getFileContent = async (directory, id) => {
   // const regex = /\.(jpg|jpeg|png|gif|svg|JPG|JPEG|PNG|GIF|SVG)$/;
   // if(regex.match(file.name)) return;
   if (!file) return;
+  const handler = file.handler
   const res = await file.handler.getFile();
   const content = await res.text();
 
-  return [res, content]
+  return [handler, content]
 }
 
 

@@ -18,25 +18,23 @@ const Vim = ({
 
 
 
-  // TODO SUPPRIMER BUG QUI FAIT DE LA 2em ouverture le fichier est vide;
-  // Peut etre revoir la façon de creer le content avec les useState dans Vim.jsx
 
   useEffect(() => {
     if (!fileId) return;
 
     const getContent = async () => {
-      const [res, content] = await getFileContent(rootDirectory, fileId).catch(console.error)
-      if (!res) return;
+      const [handler, content] = await getFileContent(rootDirectory, fileId).catch(console.error)
+      if (!handler) return;
       setFileContent(content);
-      setCurrentFileOpen(res);
+      setCurrentFileOpen(handler);
     }
     getContent().catch(console.error);
 
   }, [fileId])
 
-  if (isVimInit) {
+  if (isVimInit && fileContent !== undefined) {
     return (
-      <CodeEditor setIsVimOpen={setIsVimOpen} fileContent={fileContent} currentFileOpen={currentFileOpen} setFileId={setFileId} />
+        <CodeEditor setIsVimOpen={setIsVimOpen} fileContent={fileContent} setFileContent={setFileContent} currentFileOpen={currentFileOpen} setFileId={setFileId} />
     )
   } else {
     return (

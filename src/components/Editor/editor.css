@@ -4,4 +4,22 @@
 /*   zoom: 90%; */
 /* } */
 
+#errorHandler {
+  color: #ed8796;
+}
+
+.editorStatus {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  padding: 0.6rem;
+}
+
+.editorStatus input {
+  background: transparent;
+  color: #fff;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
 
