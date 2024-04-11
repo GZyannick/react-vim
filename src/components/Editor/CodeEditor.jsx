@@ -9,7 +9,7 @@ import { getLanguageExtension } from "../../utils/editorUtils/editorLanguageSupp
 import { editorOptions } from "../../utils/editorUtils/editorOptions";
 import { writeMode, quitMode } from "../../utils/editorUtils/editorCommands";
 const CodeEditor = ({
-  setIsVimOpen,
+  setVimHandler,
   fileContent,
   setFileContent,
   currentFileOpen,
@@ -23,7 +23,7 @@ const CodeEditor = ({
     writeMode(currentFileOpen, editorRef, setFileContent),
   );
   VimMode.Vim.defineEx("quit", "q", () =>
-    quitMode(fileContent, editorRef, setFileId, setError, setIsVimOpen),
+    quitMode(fileContent, editorRef, setFileId, setError, setVimHandler),
   );
 
   const onMount = (editor) => {

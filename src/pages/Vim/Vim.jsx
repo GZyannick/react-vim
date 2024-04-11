@@ -4,36 +4,45 @@ import { useEffect, useState } from "react";
 import CodeEditor from "../../components/Editor/CodeEditor";
 import { getFileContent } from "../../utils/fsa.js";
 
-const Vim = ({
-  rootDirectory,
-  currentDirectory,
-  setCurrentDirectory,
-  setIsFileSystemOpen,
-  setIsVimOpen
-}) => {
+const Vim = ({ vimHandler, setVimHandler, setIsFileSystemOpen }) => {
   const [isVimInit, setIsVimInit] = useState(false);
-  const [fileId, setFileId] = useState()
+  const [fileId, setFileId] = useState();
   const [fileContent, setFileContent] = useState();
   const [currentFileOpen, setCurrentFileOpen] = useState();
 
   useEffect(() => {
-    if (!fileId) return;
-
+    if (
+      vimHandler.isFolder === false &&
+      vimHandler.fileOrDirectory &&
+      !fileId
+    ) {
+      setFileId(vimHandler.fileOrDirectory.id);
+      setIsVimInit(true);
+    } else if (vimHandler.isFolder && !fileId) return;
     const getContent = async () => {
-      const [handler, content] = await getFileContent(rootDirectory, fileId).catch(console.error)
+      // TODO Meilleur Gestion de fileOrDirectory
+      const [handler, content] = await getFileContent(
+        vimHandler.fileOrDirectory,
+        fileId,
+      ).catch(console.error);
       if (!handler) return;
       setFileContent(content);
       setCurrentFileOpen(handler);
-    }
+    };
     getContent().catch(console.error);
-
-  }, [fileId])
+  }, [fileId, vimHandler]);
 
   if (isVimInit && fileContent !== undefined) {
     return (
-        <CodeEditor setIsVimOpen={setIsVimOpen} fileContent={fileContent} setFileContent={setFileContent} currentFileOpen={currentFileOpen} setFileId={setFileId} />
-    )
-  } else {
+      <CodeEditor
+        setVimHandler={setVimHandler}
+        fileContent={fileContent}
+        setFileContent={setFileContent}
+        currentFileOpen={currentFileOpen}
+        setFileId={setFileId}
+      />
+    );
+  } else if (vimHandler.isFolder) {
     return (
       <>
         <div className="vim">
@@ -52,18 +61,16 @@ const Vim = ({
               </ul>
             </div>
             <p>====================================================</p>
-            <FolderStructur folderStruct={rootDirectory} setIsVimInit={setIsVimInit} setFileId={setFileId} />
+            <FolderStructur
+              folderStruct={vimHandler.fileOrDirectory}
+              setIsVimInit={setIsVimInit}
+              setFileId={setFileId}
+            />
           </div>
         </div>
-
       </>
-    )
+    );
   }
-
-}
+};
 
 export default Vim;
-
-
-
-

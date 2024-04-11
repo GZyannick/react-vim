@@ -15,11 +15,15 @@ export const writeMode = async (fileOpen, editorRef, setContent) => {
   setContent((prevContent) => (prevContent = content)); // set value in react front useState;
 };
 
-export const quitMode = (content, editorRef, setId, setErr, setIsOpen) => {
+export const quitMode = (content, editorRef, setId, setErr, setVimHandler) => {
   if (content === editorRef.current.getValue()) {
     setId((prevId) => (prevId = undefined));
     setErr("");
-    setIsOpen(false);
+    setVimHandler({
+      isOpen: false,
+      fileOrDirectory: undefined,
+      isFolder: false,
+    });
   } else {
     setErr("now write since last change use ! to override it");
   }

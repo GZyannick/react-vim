@@ -1,13 +1,17 @@
 import "./Page.css";
 import { useState, useEffect } from "react";
 import Prompts from "../Prompts/Prompts";
-import Vim from "../Vim/Vim.jsx"
-import { openDirectoryInstance, initFolderData } from '../../utils/fsa';
+import Vim from "../Vim/Vim.jsx";
+import { openDirectoryInstance, initFolderData } from "../../utils/fsa";
 const Page = () => {
   const [rootDirectory, setRootDirectory] = useState();
   const [currentDirectory, setCurrentDirectory] = useState();
   const [isFileSystemOpen, setIsFileSystemOpen] = useState(false);
-  const [isVimOpen, setIsVimOpen] = useState(false);
+  const [vimHandler, setVimHandler] = useState({
+    isOpen: false,
+    fileOrDirectory: undefined,
+    isFolder: false,
+  });
 
   useEffect(() => {
     if (!isFileSystemOpen) return;
@@ -17,26 +21,23 @@ const Page = () => {
       if (dirHandle) {
         const folderData = await initFolderData(dirHandle);
         setRootDirectory(folderData);
-        setCurrentDirectory(folderData)
+        setCurrentDirectory(folderData);
       }
-    }
+    };
     fetchDir();
     setIsFileSystemOpen(false);
-  }, [isFileSystemOpen])
+  }, [isFileSystemOpen]);
 
-
-  if (isVimOpen) {
+  if (vimHandler.isOpen) {
     return (
       <>
         <Vim
-          rootDirectory={rootDirectory}
-          currentDirectory={currentDirectory}
-          setCurrentDirectory={setCurrentDirectory}
+          vimHandler={vimHandler}
+          setVimHandler={setVimHandler}
           setIsFileSystemOpen={setIsFileSystemOpen}
-          setIsVimOpen={setIsVimOpen}
         />
       </>
-    )
+    );
   } else {
     return (
       <>
@@ -45,11 +46,11 @@ const Page = () => {
           currentDirectory={currentDirectory}
           setCurrentDirectory={setCurrentDirectory}
           setIsFileSystemOpen={setIsFileSystemOpen}
-          setIsVimOpen={setIsVimOpen}
+          setVimHandler={setVimHandler}
         />
       </>
-    )
+    );
   }
-}
+};
 
 export default Page;
