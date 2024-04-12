@@ -20,7 +20,7 @@ export const execCommand = async ({
   if (!currentCommand) {
     cmdErr(setPromptList, `Command not found use the help command`);
     return;
-  } else if (haveParameter !== currentCommand.params) {
+  } else if (haveParameter !== currentCommand.params && cmds[0] !== "ls") {
     cmdErr(setPromptList, `Wrong parameter use help command to learn more`);
     return;
   } else if (currentCommand.dir && !currentDirectory) {
@@ -48,6 +48,19 @@ export const execCommand = async ({
       },
       cmds,
     );
+    return;
+  }
+
+  if (cmds[0] === "ls") {
+    currentCommand.exec(
+      setPromptList,
+      {
+        current: currentDirectory,
+        setCurrent: setCurrentDirectory,
+        root: rootDirectory
+      },
+      cmds
+    )
     return;
   }
 
@@ -111,19 +124,6 @@ const help = (setState) => {
   ]);
 };
 
-// show the content of the current Directory
-const ls = (setState, directory) => {
-  setState((prevState) => [
-    ...prevState,
-    <div key={prevState.length} className="command__result inline__command">
-      {directory.current.items.map((item) => {
-        if (item.name === ".DS_Store") return;
-        return <p key={item.id}>{item.name}</p>;
-      })}
-    </div>,
-  ]);
-};
-
 const cd = (setState, directory, cmds) => {
   const splitParameter = splitParams(cmds);
   if (!splitParameter) return;
@@ -132,44 +132,55 @@ const cd = (setState, directory, cmds) => {
   directory.setCurrent((prevCurrent) => (prevCurrent = fileOrDirectory));
 };
 
-const mkdir = async (setState, dirHandle, cmds) => {
-  const pathParameter = cmds.pop();
+const mkdir = async (setState, directory, cmds) => {
+  const splitParameter = splitParams(cmds)
+  if (!splitParameter) return cmdErr(setState, "cmd not found");
+  const folderToCreate = splitParameter.pop();
+  const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter)
+  if (!fileOrDirectory) return
+
   const newDirectoryHandle = await createNewHandle(
-    pathParameter,
-    dirHandle.current,
+    folderToCreate,
+    fileOrDirectory,
     "directory",
   );
   if (newDirectoryHandle) {
-    dirHandle.current.items.push(newDirectoryHandle);
-    dirHandle.setCurrent((prevCurrent) => (prevCurrent = dirHandle.current));
+    fileOrDirectory.items.push(newDirectoryHandle);
 
     setState((prevState) => [
       ...prevState,
       <div key={prevState.length} className="command__result inline__command">
-        <p> Folder {pathParameter} created with success </p>
+        <p> Folder {folderToCreate} created with success </p>
       </div>,
     ]);
   }
 };
 
-const touch = async (setState, dirHandle, cmds) => {
-  const pathParameter = cmds.pop();
+const touch = async (setState, directory, cmds) => {
+  const splitParameter = splitParams(cmds);
+  if (!splitParameter) return cmdErr(setState, "cmd not found")
+  const fileToCreate = splitParameter.pop();
+
+  let fileOrDirectory = pathHandlerV2(setState, directory, splitParameter)
+  if (!fileOrDirectory) return;
   const newFileHandle = await createNewHandle(
-    pathParameter,
-    dirHandle.current,
+    fileToCreate,
+    fileOrDirectory,
     "file",
   );
   if (newFileHandle) {
-    dirHandle.current.items.push(newFileHandle);
-    dirHandle.setCurrent((prevCurrent) => (prevCurrent = dirHandle.current));
+    fileOrDirectory.items.push(newFileHandle);
     setState((prevState) => [
       ...prevState,
       <div key={prevState.length} className="command__result inline__command">
-        <p> file {pathParameter} created with success </p>
+        <p> file {fileToCreate} created with success </p>
       </div>,
     ]);
   }
 };
+
+
+
 
 const vim = (setVimHandler, setState, directory, cmds) => {
   const splitParameter = splitParams(cmds);
@@ -190,6 +201,34 @@ const vim = (setVimHandler, setState, directory, cmds) => {
     isFolder: fileOrDirectory.isFolder,
   });
 };
+
+
+//--------- WORK IN PROGRESS ----------//
+//
+// show the content of the current Directory
+const ls = (setState, directory, cmds) => {
+  let fileOrDirectory = directory.current;
+
+  if (cmds.length > 1) {
+    const splitParameter = splitParams(cmds);
+    if (!splitParameter) return cmdErr(setState, "path not found");
+    fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
+    if (!fileOrDirectory) return;
+  }
+
+  setState((prevState) => [
+    ...prevState,
+    <div key={prevState.length} className="command__result inline__command">
+      {fileOrDirectory.items.map((item) => {
+        if (item.name === ".DS_Store") return;
+        return <p key={item.id}>{item.name}</p>;
+      })}
+    </div>,
+  ]);
+};
+
+
+
 
 // const rm = async (setState, dirHandle, cmds) => {
 // }
@@ -225,6 +264,7 @@ export const cmdErr = (setState, errMessage) => {
  */
 
 const createNewHandle = async (path, currentDir, type) => {
+
   if (!path || path.includes("/")) return;
   let newHandle;
   let uniqId = getUniqId();
@@ -308,7 +348,7 @@ export const commands = {
     exec: ls,
     desc: "show all file and folder",
     dir: true,
-    params: false,
+    params: true,
   },
   mkdir: {
     exec: mkdir,
