@@ -23,7 +23,7 @@ const Prompts = ({
     ) {
       let cmd = e.target.value;
       e.preventDefault();
-      createOldPrompt(cmd, setPromptList);
+      createOldPrompt(cmd, setPromptList, currentDirectory.name);
 
       // choose the best way to handle the commands
       await execCommand({

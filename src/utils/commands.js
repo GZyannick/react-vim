@@ -236,11 +236,11 @@ const ls = (setState, directory, cmds) => {
 // ----- private commands ----- //
 
 // transform user prompt on enter to a div with e.target.value
-export const createOldPrompt = (value, SetState) => {
+export const createOldPrompt = (value, SetState, directoryName) => {
   if (value === "clear") return;
   SetState((prevState) => [
     ...prevState,
-    <Prompt key={prevState.length}>
+    <Prompt key={prevState.length} directoryName={directoryName}>
       <TerminalUserDisplay content={value} />
     </Prompt>,
   ]);
