@@ -78,7 +78,7 @@ const Prompts = ({
   return (
     <>
       {promptList}
-      <Prompt>
+      <Prompt directoryName={currentDirectory.name}>
         <TerminalUserInput
           handleOnKeyDown={handleOnKeyDown}
           terminalInputRef={terminalInputRef}
