@@ -16,6 +16,8 @@ const Prompts = ({
   //handle commands history
   const [commandsHistory, setCommandsHistory] = useState([]);
   const [handleCommandHistory, setHandleCommandHistory] = useState(0);
+
+  const currentDirectoryName = currentDirectory ? `/ ${currentDirectory.name}` : "~"
   const handleOnKeyDown = async (e) => {
     if (
       e.key === "Enter" &&
@@ -23,7 +25,7 @@ const Prompts = ({
     ) {
       let cmd = e.target.value;
       e.preventDefault();
-      createOldPrompt(cmd, setPromptList, currentDirectory.name);
+      createOldPrompt(cmd, setPromptList, currentDirectoryName);
 
       // choose the best way to handle the commands
       await execCommand({
@@ -78,7 +80,7 @@ const Prompts = ({
   return (
     <>
       {promptList}
-      <Prompt directoryName={currentDirectory.name}>
+      <Prompt directoryName={currentDirectoryName}>
         <TerminalUserInput
           handleOnKeyDown={handleOnKeyDown}
           terminalInputRef={terminalInputRef}

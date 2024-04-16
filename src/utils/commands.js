@@ -26,7 +26,7 @@ export const execCommand = async ({
   } else if (currentCommand.dir && !currentDirectory) {
     cmdErr(
       setPromptList,
-      `You have to use the init command to use this command`,
+      `You have to use the init command before to use this command`,
     );
     return;
   }
@@ -57,10 +57,10 @@ export const execCommand = async ({
       {
         current: currentDirectory,
         setCurrent: setCurrentDirectory,
-        root: rootDirectory
+        root: rootDirectory,
       },
-      cmds
-    )
+      cmds,
+    );
     return;
   }
 
@@ -126,18 +126,19 @@ const help = (setState) => {
 
 const cd = (setState, directory, cmds) => {
   const splitParameter = splitParams(cmds);
-  if (!splitParameter) return;
+  if (!splitParameter) return cmdErr(setState, "couldnt find paramater");
   const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
-  if (!fileOrDirectory || !fileOrDirectory.isFolder) return;
+  if (!fileOrDirectory || !fileOrDirectory.isFolder)
+    return cmdErr(setState, "path not found");
   directory.setCurrent((prevCurrent) => (prevCurrent = fileOrDirectory));
 };
 
 const mkdir = async (setState, directory, cmds) => {
-  const splitParameter = splitParams(cmds)
-  if (!splitParameter) return cmdErr(setState, "cmd not found");
+  const splitParameter = splitParams(cmds);
+  if (!splitParameter) return cmdErr(setState, "couldnt find parameter");
   const folderToCreate = splitParameter.pop();
-  const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter)
-  if (!fileOrDirectory) return
+  const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
+  if (!fileOrDirectory) return cmdErr(setState, "file or directory not found");
 
   const newDirectoryHandle = await createNewHandle(
     folderToCreate,
@@ -158,11 +159,11 @@ const mkdir = async (setState, directory, cmds) => {
 
 const touch = async (setState, directory, cmds) => {
   const splitParameter = splitParams(cmds);
-  if (!splitParameter) return cmdErr(setState, "cmd not found")
+  if (!splitParameter) return cmdErr(setState, "couldnt find parameter");
   const fileToCreate = splitParameter.pop();
 
-  let fileOrDirectory = pathHandlerV2(setState, directory, splitParameter)
-  if (!fileOrDirectory) return;
+  let fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
+  if (!fileOrDirectory) return cmdErr(setState, "file or directory not found");
   const newFileHandle = await createNewHandle(
     fileToCreate,
     fileOrDirectory,
@@ -179,22 +180,11 @@ const touch = async (setState, directory, cmds) => {
   }
 };
 
-
-
-
 const vim = (setVimHandler, setState, directory, cmds) => {
   const splitParameter = splitParams(cmds);
-  if (!splitParameter)
-    return cmdErr(
-      setState,
-      `Couldnt find corresponding file or directory ${cmds.pop()}`,
-    );
+  if (!splitParameter) return;
   const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
-  if (!fileOrDirectory)
-    return cmdErr(
-      setState,
-      `Couldnt find corresponding file or directory ${cmds.pop()}`,
-    );
+  if (!fileOrDirectory) return;
   setVimHandler({
     isOpen: true,
     fileOrDirectory: fileOrDirectory,
@@ -202,9 +192,6 @@ const vim = (setVimHandler, setState, directory, cmds) => {
   });
 };
 
-
-//--------- WORK IN PROGRESS ----------//
-//
 // show the content of the current Directory
 const ls = (setState, directory, cmds) => {
   let fileOrDirectory = directory.current;
@@ -226,9 +213,6 @@ const ls = (setState, directory, cmds) => {
     </div>,
   ]);
 };
-
-
-
 
 // const rm = async (setState, dirHandle, cmds) => {
 // }
@@ -264,7 +248,6 @@ export const cmdErr = (setState, errMessage) => {
  */
 
 const createNewHandle = async (path, currentDir, type) => {
-
   if (!path || path.includes("/")) return;
   let newHandle;
   let uniqId = getUniqId();
@@ -312,13 +295,13 @@ const pathHandlerV2 = (setState, directory, paths) => {
         fileOrDirectory.id,
         true,
       );
-      if (!getParentDirectory) return cmdErr(setState, ` Couldnt find ${path}`);
+      if (!getParentDirectory) return;
       fileOrDirectory = getParentDirectory;
     } else {
       const subDirectory = fileOrDirectory.items.find(
         (dir) => dir.name === path,
       );
-      if (!subDirectory) return cmdErr(setState, `Couldnt find ${path}`);
+      if (!subDirectory) return;
       fileOrDirectory = subDirectory;
     }
   }

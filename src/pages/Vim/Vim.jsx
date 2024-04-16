@@ -62,7 +62,8 @@ const Vim = ({ vimHandler, setVimHandler, setIsFileSystemOpen }) => {
             </div>
             <p>====================================================</p>
             <FolderStructur
-              folderStruct={vimHandler.fileOrDirectory}
+              vimHandler={vimHandler}
+              setVimHandler={setVimHandler}
               setIsVimInit={setIsVimInit}
               setFileId={setFileId}
             />
