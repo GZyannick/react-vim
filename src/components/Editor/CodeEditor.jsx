@@ -1,56 +1,56 @@
 import { Editor } from "@monaco-editor/react";
 import { initVimMode, VimMode } from "monaco-vim";
-import * as monaco from "monaco-editor"
-import { useRef } from "react";
-import './editor.css'
+import * as monaco from "monaco-editor";
+import { useRef, useState } from "react";
+import "./editor.css";
 
-const CodeEditor = ({ setIsVimOpen }) => {
+// utils
+import { getLanguageExtension } from "../../utils/editorUtils/editorLanguageSupport";
+import { editorOptions } from "../../utils/editorUtils/editorOptions";
+import { writeMode, quitMode } from "../../utils/editorUtils/editorCommands";
+const CodeEditor = ({
+  setVimHandler,
+  fileContent,
+  setFileContent,
+  currentFileOpen,
+  setFileId,
+}) => {
+  const [language, setLanguage] = useState("javascript");
 
+  const [error, setError] = useState("");
   const editorRef = useRef();
-  const options = {
-    readOnly: false,
-    minimap: { enabled: false },
-    wordWrap: "on",
-    cursorStyle: "block",
-    fontFamily: "monospace",
-    fontSize: 13,
-    lineHeight: 24,
-    matchBrackets: "always",
-  }
-
-  //TODO trouver comment le mettre dans editorCommands avec setIsVimInit
-  VimMode.Vim.defineEx('quit', 'q', () => {
-    setIsVimOpen(false)
-  })
+  VimMode.Vim.defineEx("write", "w", async () =>
+    writeMode(currentFileOpen, editorRef, setFileContent),
+  );
+  VimMode.Vim.defineEx("quit", "q", () =>
+    quitMode(fileContent, editorRef, setFileId, setError, setVimHandler),
+  );
 
   const onMount = (editor) => {
     editorRef.current = editor;
     const statusMode = document.getElementById("statusBar");
     initVimMode(editorRef.current, statusMode);
+    getLanguageExtension(currentFileOpen, monaco, editor);
     editor.focus();
-  }
-
-  // const handleEditorChange = (value, event) => {
-  //   console.log(value, event);
-  // }
+  };
 
   return (
     <>
       <Editor
         id="monaco__editor"
-        height="80vh"
+        height="100vh"
         theme="vs-dark"
         onMount={onMount}
-        defaultLanguage="javascript"
-        defaultValue="// test content"
-        options={options}
-        //onChange={handleEditorChange}
+        options={editorOptions}
+        defaultValue={fileContent}
+        defaultLanguage={language}
       />
-      <div id="statusBar"></div>
+      <div className="editorStatus">
+        <div id="statusBar"></div>
+        <div id="errorHandler">{error}</div>
+      </div>
     </>
-  )
-}
+  );
+};
 
 export default CodeEditor;
-
-

@@ -2,12 +2,12 @@ export const getFile = async (isFileSystemOpen, setIsFileSystemOpen) => {
   if (!isFileSystemOpen) return;
   try {
     const [fileHandle] = await window.showOpenFilePicker();
-    console.log(fileHandle)
+    console.log(fileHandle);
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
   setIsFileSystemOpen(false);
-}
+};
 
 export const openDirectory = async (mode = "read") => {
   // Feature detection. The API needs to be supported
@@ -41,20 +41,17 @@ export const openDirectory = async (mode = "read") => {
                 enumerable: true,
                 get: () => nestedPath,
               });
-            })
+            }),
           );
-
         } else if (entry.kind === "directory") {
           dirs.push(getFiles(entry, nestedPath));
         }
       }
 
-
       return [
         ...(await Promise.all(dirs)).flat(),
         ...(await Promise.all(files)),
       ];
-
     };
 
     try {
@@ -71,24 +68,43 @@ export const openDirectory = async (mode = "read") => {
     }
     return directoryStructure;
   }
-
 };
 
+export const search = (currentDir, searchValue, getParent) => {
+  let res;
 
-export const createNewDir = (entry, folder) => {
+  for (const item of currentDir.items) {
+    if (res) return res;
+    if (item.id === searchValue) {
+      res = getParent ? currentDir : item;
+    } else {
+      res = search(item, searchValue, getParent);
+    }
+  }
+  return res;
+};
 
-}
+export const getFileContent = async (fileOrDirectory, id) => {
+  const file = fileOrDirectory.isFolder
+    ? search(fileOrDirectory, id, false)
+    : fileOrDirectory;
 
+  // const regex = /\.(jpg|jpeg|png|gif|svg|JPG|JPEG|PNG|GIF|SVG)$/;
+  // if(regex.match(file.name)) return;
+  if (!file) return;
+  const handler = file.handler;
+  const res = await file.handler.getFile();
+  const content = await res.text();
 
-
-
+  return [handler, content];
+};
 
 // creer un tree avec folder est file
 // + si root nexiste pas alors ajouter un dir
 // + creer une nouvelle banche pour chaque enfant
 // + si la branch est un file alors elle ne pourra pas avoir d'enfant
 // + si la branch est un folder alors elle pourra avoir des enfant
-// + reiterer jusqua l'abre creer 
+// + reiterer jusqua l'abre creer
 //
 //
 
@@ -105,29 +121,31 @@ export const openDirectoryInstance = async (mode = "read") => {
     })();
 
   if (!supportsFileSystemAccess) {
-    console.error("File system api is not supported by your browser")
-    return
-  };
+    console.error("File system api is not supported by your browser");
+    return;
+  }
 
   try {
     dirHandle = await window.showDirectoryPicker({
-      mode
-    })
+      mode,
+    });
   } catch (err) {
     if (err.name !== "AbortError") {
       console.error(err.name, err.message);
     }
   }
-  return dirHandle
-}
-
-
+  return dirHandle;
+};
 
 export const getUniqId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
+};
 
-export const transformHandlerToFolderStructurObject = (directory, uniqId, id) => {
+export const transformHandlerToFolderStructurObject = (
+  directory,
+  uniqId,
+  id,
+) => {
   const folderStructur = {
     id: uniqId,
     name: directory.name,
@@ -138,19 +156,21 @@ export const transformHandlerToFolderStructurObject = (directory, uniqId, id) =>
   };
 
   return folderStructur;
-}
+};
 
 // create an object of all directories and files from le local storage
 export const initFolderData = async (directory, id = "root") => {
   const uniqId = getUniqId();
-  const folderStructur = transformHandlerToFolderStructurObject(directory, uniqId, id)
+  const folderStructur = transformHandlerToFolderStructurObject(
+    directory,
+    uniqId,
+    id,
+  );
 
   if (!folderStructur.isFolder) return folderStructur;
 
   for await (const item of directory.values()) {
-    folderStructur.items.push(await initFolderData(item, uniqId))
+    folderStructur.items.push(await initFolderData(item, uniqId));
   }
-  return folderStructur
-}
-
-
+  return folderStructur;
+};
