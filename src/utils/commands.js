@@ -12,7 +12,7 @@ export const execCommand = async ({
   setVimHandler,
   setIsFileSystemOpen,
 }) => {
-  let cmds = cmd.split(" ");
+  let cmds = splitStringAndClearEmptyString(cmd.trim(), " ");
   let currentCommand = commands[cmds[0]];
   let haveParameter = cmds.length > 1 ? true : false;
 
@@ -125,7 +125,7 @@ const help = (setState) => {
 };
 
 const cd = (setState, directory, cmds) => {
-  const splitParameter = splitParams(cmds);
+  const splitParameter = splitStringAndClearEmptyString(cmds.pop(), "/");
   if (!splitParameter) return cmdErr(setState, "couldnt find paramater");
   const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
   if (!fileOrDirectory || !fileOrDirectory.isFolder)
@@ -134,7 +134,7 @@ const cd = (setState, directory, cmds) => {
 };
 
 const mkdir = async (setState, directory, cmds) => {
-  const splitParameter = splitParams(cmds);
+  const splitParameter = splitStringAndClearEmptyString(cmds.pop(), "/");
   if (!splitParameter) return cmdErr(setState, "couldnt find parameter");
   const folderToCreate = splitParameter.pop();
   const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
@@ -158,7 +158,7 @@ const mkdir = async (setState, directory, cmds) => {
 };
 
 const touch = async (setState, directory, cmds) => {
-  const splitParameter = splitParams(cmds);
+  const splitParameter = splitStringAndClearEmptyString(cmds.pop(), "/");
   if (!splitParameter) return cmdErr(setState, "couldnt find parameter");
   const fileToCreate = splitParameter.pop();
 
@@ -181,7 +181,7 @@ const touch = async (setState, directory, cmds) => {
 };
 
 const vim = (setVimHandler, setState, directory, cmds) => {
-  const splitParameter = splitParams(cmds);
+  const splitParameter = splitStringAndClearEmptyString(cmds.pop(), "/");
   if (!splitParameter) return;
   const fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
   if (!fileOrDirectory) return;
@@ -197,7 +197,7 @@ const ls = (setState, directory, cmds) => {
   let fileOrDirectory = directory.current;
 
   if (cmds.length > 1) {
-    const splitParameter = splitParams(cmds);
+    const splitParameter = splitStringAndClearEmptyString(cmds.pop(), "/");
     if (!splitParameter) return cmdErr(setState, "path not found");
     fileOrDirectory = pathHandlerV2(setState, directory, splitParameter);
     if (!fileOrDirectory) return;
@@ -308,9 +308,15 @@ const pathHandlerV2 = (setState, directory, paths) => {
   return fileOrDirectory;
 };
 
-const splitParams = (params) => {
-  const parameter = params.pop();
-  return parameter ? parameter.split("/") : undefined;
+// const splitParams = (params) => {
+//   const parameter = params.pop();
+//   return parameter
+//     ? parameter.split("/").filter((param) => param != "")
+//     : undefined;
+// };
+
+const splitStringAndClearEmptyString = (val, charToSplit) => {
+  return val.split(charToSplit).filter((param) => param != "");
 };
 
 // List of all commands the user can use
