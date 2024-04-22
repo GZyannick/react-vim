@@ -15,7 +15,9 @@ const CodeEditor = ({
   currentFileOpen,
   setFileId,
 }) => {
-  const [language, setLanguage] = useState("javascript");
+  const [language, setLanguage] = useState(
+    getLanguageExtension(currentFileOpen),
+  );
 
   const [error, setError] = useState("");
   const editorRef = useRef();
@@ -30,7 +32,6 @@ const CodeEditor = ({
     editorRef.current = editor;
     const statusMode = document.getElementById("statusBar");
     initVimMode(editorRef.current, statusMode);
-    getLanguageExtension(currentFileOpen, monaco, editor);
     editor.focus();
   };
 

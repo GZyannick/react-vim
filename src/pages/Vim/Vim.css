@@ -8,3 +8,8 @@
   height: 92%;
   width: 100%;
 }
+
+.explorer__editor {
+  display: flex;
+
+}

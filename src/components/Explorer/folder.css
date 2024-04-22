@@ -1,11 +1,10 @@
 .svg{
   width: 20px;
   height: 20px;
-  margin-right: 0.5rem;
 }
 
 .explorer {
-  padding-left: 1.5rem;
+  padding-left: 0.5rem;
   user-select: none;
 }
 

@@ -1,19 +1,98 @@
 const monacoLanguageSupport = {
-  ".js": "javascript",
-  ".ts": "typescript",
-  ".json": "json",
+  ".txt": "plaintext",
+  ".abap": "abap",
+  ".cls": "apex",
+  ".azcli": "azcli",
+  ".bat": "bat",
+  ".bicep": "bicep",
+  ".mligo": "cameligo",
+  ".clj": "clojure",
+  ".coffee": "coffeescript",
+  ".c": "c",
+  ".cpp": "cpp",
+  ".cs": "csharp",
+  undefined: "redshift",
   ".css": "css",
+  ".cypher": "cypher",
+  ".dart": "dart",
+  ".dockerfile": "dockerfile",
+  ".ecl": "ecl",
+  ".ex": "elixir",
+  ".flow": "flow9",
+  ".fs": "fsharp",
+  ".ftl": "freemarker2",
+  ".go": "go",
+  ".graphql": "graphql",
+  ".handlebars": "handlebars",
+  ".tf": "hcl",
   ".html": "html",
+  ".ini": "ini",
+  ".java": "java",
+  ".js": "javascript",
+  ".jl": "julia",
+  ".kt": "kotlin",
+  ".less": "less",
+  ".lex": "lexon",
+  ".lua": "lua",
+  ".liquid": "liquid",
+  ".m3": "m3",
+  ".md": "markdown",
+  ".mdx": "mdx",
+  ".s": "mips",
+  ".dax": "msdax",
+  ".m": "objective-c",
+  ".pas": "pascal",
+  ".ligo": "pascaligo",
+  ".pl": "perl",
+  ".php": "php",
+  ".pla": "pla",
+  ".dats": "postiats",
+  ".pq": "powerquery",
+  ".ps1": "powershell",
+  ".proto": "proto",
+  ".jade": "pug",
+  ".py": "python",
+  ".qs": "qsharp",
+  ".r": "r",
+  ".cshtml": "razor",
+  ".redis": "redis",
+  ".rst": "restructuredtext",
+  ".rb": "ruby",
+  ".rs": "rust",
+  ".sb": "sb",
+  ".scala": "scala",
+  ".scm": "scheme",
+  ".scss": "scss",
+  ".sh": "shell",
+  ".sol": "sol",
+  ".aes": "aes",
+  ".rq": "sparql",
+  ".sql": "sql",
+  ".st": "st",
+  ".swift": "swift",
+  ".sv": "systemverilog",
+  ".v": "verilog",
+  ".tcl": "tcl",
+  ".twig": "twig",
+  ".ts": "typescript",
+  ".vb": "vb",
+  ".wgsl": "wgsl",
+  ".xml": "xml",
+  ".yaml": "yaml",
+  ".json": "json",
+  ".jsx": "javascript",
+  ".tsx": "javascript",
 };
 
-export const getLanguageExtension = (currentFileOpen, monaco, editor) => {
+export const getLanguageExtension = (currentFileOpen) => {
   const regex = /\.[0-9a-z]+$/i;
-  const currentLanguage = currentFileOpen.name.match(regex)[0];
-  if (monacoLanguageSupport[currentLanguage]) {
-    //editor.setLanguage(monacoLanguageSupport[currentLanguage]);
-    monaco.editor.setModelLanguage(
-      editor.getModel(),
-      monacoLanguageSupport[currentLanguage],
-    );
+  const currentLanguageExtension = currentFileOpen.name.match(regex)[0];
+  const currentLanguage = monacoLanguageSupport[currentLanguageExtension];
+
+  if (currentLanguage) {
+    console.log(currentLanguage);
+    return currentLanguage;
+  } else {
+    return "plaintext";
   }
 };

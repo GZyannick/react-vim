@@ -214,6 +214,8 @@ const ls = (setState, directory, cmds) => {
   ]);
 };
 
+
+
 // const rm = async (setState, dirHandle, cmds) => {
 // }
 

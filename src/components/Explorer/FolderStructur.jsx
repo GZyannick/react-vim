@@ -44,8 +44,8 @@ const FolderStructur = ({
 
   return (
     <>
-      <div ref={folderStructurRef}>
-        <Folder
+      <div ref={folderStructurRef} style={{padding: "0.5rem",}}>
+        <Folder 
           explorer={vimHandler.fileOrDirectory}
           isParentOpen={true}
           isRoot={true}
@@ -56,3 +56,11 @@ const FolderStructur = ({
 };
 
 export default FolderStructur;
+
+// <Folder
+//   explorer={vimHandler.fileOrDirectory}
+//   isParentOpen={true}
+//   isRoot={true}
+// />
+
+//<FolderV2 explorer={vimHandler.fileOrDirectory} />
